@@ -10,6 +10,7 @@ import lombok.*;
 @Table(name = "users")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUser extends BaseEntity {
