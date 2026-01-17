@@ -1,5 +1,7 @@
 package com.olalekan.CoolBank.service;
 
+import com.olalekan.CoolBank.exception.ExpiredTokenException;
+import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.RefreshToken;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.RefreshTokenRepo;
@@ -20,10 +22,9 @@ public class RefreshTokenService {
     private final AppUserRepo appUserRepo;
 
     @Transactional
-    public RefreshToken createRefreshToken(String email){
+    public RefreshToken createRefreshToken(AppUser user){
         RefreshToken refreshToken = RefreshToken.builder()
-                .user(appUserRepo.findByEmail(email).orElseThrow(() ->
-                        new UsernameNotFoundException("Invalid user")))
+                .user(user)
                 .token(UUID.randomUUID().toString())
                 .expiryDate(LocalDateTime.now().plusDays(7))
                 .build();
@@ -35,7 +36,7 @@ public class RefreshTokenService {
     public RefreshToken verifyRefreshToken(RefreshToken token){
         if(token.getExpiryDate().isBefore(LocalDateTime.now())){
             refreshTokenRepo.delete(token);
-            throw new RuntimeException("The token has expired");
+            throw new ExpiredTokenException("The token has expired");
         }
         return token;
     }

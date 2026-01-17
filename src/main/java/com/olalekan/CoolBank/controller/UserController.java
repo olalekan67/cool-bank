@@ -1,7 +1,6 @@
 package com.olalekan.CoolBank.controller;
 
-import com.olalekan.CoolBank.model.dto.RegisterRequestDto;
-import com.olalekan.CoolBank.model.dto.RegisterResponseDto;
+import com.olalekan.CoolBank.model.dto.*;
 import com.olalekan.CoolBank.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +15,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("api/v1")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
 
     @PostMapping("register")
-    public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
-        RegisterResponseDto registerResponseDto = userService.register(registerRequestDto);
+    public ResponseEntity<BaseResponseDto> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
+        BaseResponseDto registerResponseDto = userService.register(registerRequestDto);
         return new ResponseEntity<>(registerResponseDto, HttpStatus.CREATED);
 
+    }
+
+    @PostMapping("verify")
+    public ResponseEntity<BaseResponseDto> verify(@RequestBody @Valid VerifyTokenRequestDto verifyTokenRequestDto){
+        String userToken = verifyTokenRequestDto.token();
+        BaseResponseDto tokenResponse = userService.verify(userToken);
+        return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto requestDto){
+        LoginResponseDto responseDto = userService.login(requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("refreshToken")
+    public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody @Valid RefreshTokenRequestDto requestDto){
+        LoginResponseDto responseDto = userService.refreshToken(requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
 }

@@ -24,6 +24,8 @@ public class Wallet extends BaseEntity{
     @Builder.Default
     private String currency = "NGN";
 
+    private String pin;
+
     @Version
     private Long version;
 
