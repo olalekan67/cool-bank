@@ -5,9 +5,9 @@ import com.olalekan.CoolBank.model.Wallet;
 import com.olalekan.CoolBank.model.dto.BalanceResponseDto;
 import com.olalekan.CoolBank.model.dto.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.CreatePinRequestDto;
+import com.olalekan.CoolBank.model.dto.UpdatePinRequestDto;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.WalletRepo;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
@@ -70,6 +71,31 @@ public class WalletService {
                 .id(wallet.getId())
                 .fullName(user.getFullName())
                 .balance(wallet.getBalance())
+                .build();
+    }
+
+    @Transactional
+    public BaseResponseDto changePin(@Valid UpdatePinRequestDto requestDto) {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        AppUser user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid username or Password"));
+
+        if(!passwordEncoder.matches(requestDto.password(), user.getPassword())){
+           throw new BadCredentialsException("Incorrect password");
+        }
+
+        Wallet wallet = user.getWallet();
+
+        if(!passwordEncoder.matches(requestDto.oldPin(), wallet.getPin())){
+            throw new BadCredentialsException("Old pin is not correct");
+        }
+
+        wallet.setPin(passwordEncoder.encode(requestDto.newPin()));
+        walletRepo.save(wallet);
+        return BaseResponseDto.builder()
+                .message("Pin updated successfully")
                 .build();
     }
 }

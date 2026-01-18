@@ -17,6 +17,14 @@ public interface TransactionRepo extends JpaRepository<Transaction, UUID> {
 
     Optional<Transaction> findByExternalReference(String reference);
 
-    @Query("SELECT t FROM Transaction t WHERE t.sourceWallet.id = :walletId OR t.destinationWallet.id = :walletId ORDER BY t.createdAt DESC")
+    Optional<Transaction> findByReference(String reference);
+
+    @Query("SELECT t FROM Transaction t " +
+                    "LEFT JOIN FETCH t.sourceWallet s " +
+                    "LEFT JOIN FETCH s.user " +
+                    "LEFT JOIN FETCH t.destinationWallet d " +
+                    "LEFT JOIN FETCH d.user " +
+                    "WHERE s.id = :walletId OR d.id = :walletId " +
+                    "ORDER BY t.createdAt DESC")
     List<Transaction> findWalletHistory(@Param("walletId") UUID walletId);
 }

@@ -4,10 +4,12 @@ import com.olalekan.CoolBank.Utils.TransactionStatus;
 import com.olalekan.CoolBank.Utils.TransactionType;
 import com.olalekan.CoolBank.exception.DuplicateTransactionException;
 import com.olalekan.CoolBank.exception.InsufficientBalanceException;
+import com.olalekan.CoolBank.exception.UnauthorizeUserException;
 import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.Transaction;
 import com.olalekan.CoolBank.model.Wallet;
 import com.olalekan.CoolBank.model.dto.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.TransactionResponseDto;
 import com.olalekan.CoolBank.model.dto.TransferRequestDto;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;
@@ -21,6 +23,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -85,5 +89,76 @@ public class TransactionService {
         return BaseResponseDto.builder()
                 .message("Transfer done successfully")
                 .build();
+    }
+
+    public TransactionResponseDto transaction(@Valid UUID id) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        AppUser currentUser = userRepo.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("Invalid email or password"));
+
+        Transaction transaction = transactionRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Invalid transaction"));
+
+        boolean isSourceWallet = transaction.getSourceWallet() != null;
+        boolean isReceiverWallet = transaction.getDestinationWallet() != null;
+
+        boolean isSender = isSourceWallet &&
+                currentUser.getId().equals(transaction.getSourceWallet().getUser().getId());
+
+        boolean isReceiver = isReceiverWallet &&
+                currentUser.getId().equals(transaction.getDestinationWallet().getUser().getId());
+
+        if(!isSender && !isReceiver){
+            throw new UnauthorizeUserException("You are not allowed to access this transaction");
+        }
+
+        return TransactionResponseDto.builder()
+                .senderEmail(isSourceWallet ? transaction.getSourceWallet().getUser().getEmail() : "External Funding")
+                .senderFullName(isSourceWallet ? transaction.getSourceWallet().getUser().getFullName() : "Paystack")
+                .receiverEmail(transaction.getDestinationWallet().getUser().getEmail())
+                .receiverFullName(transaction.getDestinationWallet().getUser().getFullName())
+                .amount(transaction.getAmount())
+                .externalReference(transaction.getExternalReference())
+                .description(transaction.getDescription())
+                .type(transaction.getType())
+                .reference(transaction.getReference())
+                .status(transaction.getStatus())
+                .dateTime(transaction.getCreatedAt())
+                .build();
+    }
+
+    public List<TransactionResponseDto> history() {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        AppUser user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid username and password"));
+
+        List<Transaction> transactions = transactionRepo.findWalletHistory(user.getWallet().getId());
+
+        if(transactions.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return transactions.stream().map(transaction -> {
+            boolean isSourceWallet = transaction.getSourceWallet() != null;
+
+
+            return TransactionResponseDto.builder()
+                    .senderEmail(isSourceWallet ? transaction.getSourceWallet().getUser().getEmail() : "External Funding")
+                    .senderFullName(isSourceWallet ? transaction.getSourceWallet().getUser().getFullName() : "Paystack")
+                    .receiverEmail(transaction.getDestinationWallet().getUser().getEmail())
+                    .receiverFullName(transaction.getDestinationWallet().getUser().getFullName())
+                    .amount(transaction.getAmount())
+                    .externalReference(transaction.getExternalReference())
+                    .description(transaction.getDescription())
+                    .type(transaction.getType())
+                    .reference(transaction.getReference())
+                    .status(transaction.getStatus())
+                    .dateTime(transaction.getCreatedAt())
+                    .build();
+        }).toList();
+
     }
 }

@@ -5,10 +5,10 @@ import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.RefreshToken;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.RefreshTokenRepo;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;

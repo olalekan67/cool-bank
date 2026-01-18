@@ -16,7 +16,6 @@ import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.RefreshTokenRepo;
 import com.olalekan.CoolBank.repo.TokenRepo;
 import com.olalekan.CoolBank.repo.WalletRepo;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,6 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
