@@ -43,8 +43,11 @@ public class AuthConfigs {
                 .csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .authorizeHttpRequests(auth ->
                             auth
-                                    .requestMatchers("/api/v1/register", "/api/v1/login", "/api/v1/verify").permitAll()
-                                    .requestMatchers("").permitAll()
+                                    .requestMatchers("/api/v1/register",
+                                            "/api/v1/login",
+                                            "/api/v1/verify",
+                                            "/api/v1/refreshToken",
+                                            "/api/v1/verifyPayment").permitAll()
                                     .anyRequest().authenticated()
                         )
                 .sessionManagement(session ->

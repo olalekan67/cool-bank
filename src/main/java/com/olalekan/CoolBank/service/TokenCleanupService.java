@@ -14,7 +14,7 @@ public class TokenCleanupService {
 
     private final TokenRepo tokenRepo;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 * * * * *")
     @Transactional
     public void removedExpiredToken(){
 
