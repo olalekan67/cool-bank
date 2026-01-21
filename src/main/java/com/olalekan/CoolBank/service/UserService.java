@@ -4,9 +4,10 @@ import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.KycTier;
 import com.olalekan.CoolBank.Utils.TokenUtils;
 import com.olalekan.CoolBank.Utils.UserRole;
-import com.olalekan.CoolBank.event.RegistrationCompleteEvent;
+import com.olalekan.CoolBank.event.EmailVerificationEvent;
 import com.olalekan.CoolBank.exception.DuplicateResourceException;
 import com.olalekan.CoolBank.exception.ExpiredTokenException;
+import com.olalekan.CoolBank.exception.UserVerificationException;
 import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.RefreshToken;
 import com.olalekan.CoolBank.model.Token;
@@ -89,7 +90,7 @@ public class UserService {
         tokenRepo.save(token);
 
 
-        eventPublisher.publishEvent(new RegistrationCompleteEvent(user, generatedToken));
+        eventPublisher.publishEvent(new EmailVerificationEvent(user, generatedToken));
 
         return BaseResponseDto.builder()
                 .message("User registered successfully, please go ahead and verify your email.")
@@ -139,6 +140,22 @@ public class UserService {
 
         AppUser user = userRepo.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid user"));
+
+        if(user.getActiveStatus() == ActiveStatus.PENDING_VERIFICATION){
+            String generatedToken = TokenUtils.generateToken();
+
+            Token token = Token.builder()
+                    .token(generatedToken)
+                    .user(user)
+                    .createdAt(LocalDateTime.now())
+                    .expiredAt(LocalDateTime.now().plusMinutes(15))
+                    .build();
+
+            tokenRepo.save(token);
+
+            eventPublisher.publishEvent(new EmailVerificationEvent(user, generatedToken));
+            throw new UserVerificationException("Please verify your email account, the verification code has been sent to your email.");
+        }
 
         if(refreshTokenRepo.existsByUser(user)){
             refreshTokenRepo.deleteByUser(user);

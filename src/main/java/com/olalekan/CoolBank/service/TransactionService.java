@@ -1,9 +1,11 @@
 package com.olalekan.CoolBank.service;
 
+import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.TransactionStatus;
 import com.olalekan.CoolBank.Utils.TransactionType;
 import com.olalekan.CoolBank.exception.DuplicateTransactionException;
 import com.olalekan.CoolBank.exception.InsufficientBalanceException;
+import com.olalekan.CoolBank.exception.InvalidUserStatusException;
 import com.olalekan.CoolBank.exception.UnauthorizeUserException;
 import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.Transaction;
@@ -49,6 +51,11 @@ public class TransactionService {
 
         Wallet senderWallet = walletRepo.findByIdWithLock(senderUser.getWallet().getId())
                 .orElseThrow(() -> new NoSuchElementException("Invalid user"));
+
+        if(senderUser.getActiveStatus() == ActiveStatus.BANNED ||
+                senderUser.getActiveStatus() == ActiveStatus.SUSPENDED){
+            throw new InvalidUserStatusException("This account has been banned or suspended. kindly reach out to our customer service to resolve the issue");
+        }
 
         if((senderWallet.getBalance().compareTo(requestDto.amount())) < 0){
             throw new InsufficientBalanceException("Insufficient balance");

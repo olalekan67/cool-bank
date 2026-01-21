@@ -1,8 +1,10 @@
 package com.olalekan.CoolBank.service;
 
+import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.TransactionStatus;
 import com.olalekan.CoolBank.Utils.TransactionType;
 import com.olalekan.CoolBank.exception.IncorrectAmountException;
+import com.olalekan.CoolBank.exception.InvalidUserStatusException;
 import com.olalekan.CoolBank.exception.PaymentInitializationException;
 import com.olalekan.CoolBank.exception.PaymentVerificationException;
 import com.olalekan.CoolBank.model.AppUser;
@@ -56,6 +58,11 @@ public class PaystackService {
 
         AppUser user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
+
+        if(user.getActiveStatus() == ActiveStatus.BANNED ||
+                user.getActiveStatus() == ActiveStatus.SUSPENDED){
+            throw new InvalidUserStatusException("This account has been banned or suspended. kindly reach out to our customer service to resolve the issue");
+        }
 
         Wallet wallet = user.getWallet();
 

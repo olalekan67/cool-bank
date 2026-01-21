@@ -13,12 +13,12 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RegistrationEventListener {
+public class EmailVerificationEventListener {
     private final EmailSenderService emailSenderService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
-    public void handleRegistrationComplete(RegistrationCompleteEvent event){
+    public void handleRegistrationComplete(EmailVerificationEvent event){
         log.info("Sending verification email to the user {}", event.user().getEmail());
 
         try {
