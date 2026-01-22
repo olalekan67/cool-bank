@@ -113,6 +113,14 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidUserStatusException.class)
+    public Map<String, String> invalidUserStatusExceptionHandler(InvalidUserStatusException ex){
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return error;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadCredentialsException.class)
     public Map<String, String> badCredentialsExceptionHandler(BadCredentialsException ex){
         Map<String, String> error = new HashMap<>();
@@ -152,7 +160,7 @@ public class GlobalExceptionHandler {
         return error;
     }
 
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public Map<String, String> exceptionHandler(Exception ex){
         Map<String, String> error = new HashMap<>();
