@@ -39,10 +39,16 @@ public class AdminTransactionController {
 
    @PostMapping("/credit")
    @PreAuthorize("hasRole('ADMIN')")
-   @Transactional
    public ResponseEntity<BaseResponseDto> credit(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
        BaseResponseDto responseDto = adminTransactionService.credit(adjustmentDto);
        return new ResponseEntity<>(responseDto, HttpStatus.OK);
    }
+
+    @PostMapping("/debit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseResponseDto> debit(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
+        BaseResponseDto responseDto = adminTransactionService.debit(adjustmentDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 
 }
