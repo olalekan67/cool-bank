@@ -24,14 +24,14 @@ public class AdminUserController {
     private final AdminUserService adminUserService;
 
     @GetMapping("users")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Page<UserSummaryBriefResponseDto>> users(Pageable pageable){
         Page<UserSummaryBriefResponseDto> users = adminUserService.getUsers(pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("users/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserSummaryResponseDto> user(@PathVariable String userId){
 
         UserSummaryResponseDto user = adminUserService.getUser(userId);
@@ -39,21 +39,21 @@ public class AdminUserController {
     }
 
     @PutMapping("users/{userId}/freeze")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BaseResponseDto> freezeUser(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
         BaseResponseDto response = adminUserService.freezeUser(userId, adminFreezeUserDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("users/{userId}/unfreeze")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BaseResponseDto> unFreezeUser(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
         BaseResponseDto response = adminUserService.unFreezeUser(userId, adminFreezeUserDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("users/{userId}/kyc")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BaseResponseDto> kycUpgrade(@PathVariable String userId, @RequestBody AccountKycUpgradeDto kycUpgradeDto){
         BaseResponseDto responseDto = adminUserService.upgradeKyc(userId, kycUpgradeDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

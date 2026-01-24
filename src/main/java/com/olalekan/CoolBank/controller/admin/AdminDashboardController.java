@@ -21,14 +21,14 @@ public class AdminDashboardController {
     private final AdminDashboardService dashboardService;
 
     @GetMapping("dashoard/stat")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AdminDashboardStatDto> dashboardStat(){
         AdminDashboardStatDto statistic = dashboardService.dashboardStat();
         return new ResponseEntity<>(statistic, HttpStatus.OK);
     }
 
     @GetMapping("audit-log")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Page<AdminActionLogResponseDto>> auditLogs(Pageable pageable){
         Page<AdminActionLogResponseDto> auditLogsResponse = dashboardService.auditLogs(pageable);
         return new ResponseEntity<>(auditLogsResponse, HttpStatus.OK);

@@ -49,7 +49,10 @@ public class AuthConfigs {
                                             "/api/v1/login",
                                             "/api/v1/verify",
                                             "/api/v1/refreshToken",
-                                            "/api/v1/verifyPayment").permitAll()
+                                            "/api/v1/verifyPayment",
+                                            "/v3/api-docs/**",
+                                            "/swagger-ui/**",
+                                            "/swagger-ui.html").permitAll()
                                     .anyRequest().authenticated()
                         )
                 .sessionManagement(session ->

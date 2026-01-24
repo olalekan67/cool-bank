@@ -21,14 +21,14 @@ public class AdminTransactionController {
     private final AdminTransactionService adminTransactionService;
 
    @GetMapping("/")
-   @PreAuthorize("hasRole('ADMIN')")
+   @PreAuthorize("hasAuthority('ADMIN')")
    public ResponseEntity<Page<AdminTransactionResponseBrief>> transactions(Pageable pageable){
        Page<AdminTransactionResponseBrief> resonses = adminTransactionService.transactions(pageable);
        return new ResponseEntity<>(resonses, HttpStatus.OK);
    }
 
    @GetMapping("/{reference}")
-   @PreAuthorize("hasRole('ADMIN')")
+   @PreAuthorize("hasAuthority('ADMIN')")
    public ResponseEntity<TransactionResponseDto> transaction(@PathVariable String reference){
         TransactionResponseDto responseDto = adminTransactionService.transaction(reference);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
@@ -36,14 +36,14 @@ public class AdminTransactionController {
 
 
    @PostMapping("/credit")
-   @PreAuthorize("hasRole('ADMIN')")
+   @PreAuthorize("hasAuthority('ADMIN')")
    public ResponseEntity<BaseResponseDto> credit(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
        BaseResponseDto responseDto = adminTransactionService.credit(adjustmentDto);
        return new ResponseEntity<>(responseDto, HttpStatus.OK);
    }
 
     @PostMapping("/debit")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BaseResponseDto> debit(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
         BaseResponseDto responseDto = adminTransactionService.debit(adjustmentDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
