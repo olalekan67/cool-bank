@@ -1,5 +1,6 @@
 package com.olalekan.CoolBank.repo;
 
+import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.model.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,5 @@ public interface AppUserRepo extends JpaRepository<AppUser, UUID> {
     Optional<AppUser> findByEmail(@Param("email") String email);
     boolean existsByEmail(@Param("email") String email);
     boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+    long countByActiveStatus(ActiveStatus activeStatus);
 }

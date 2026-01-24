@@ -98,7 +98,7 @@ public class AdminTransactionService {
                 .externalReference(externalReference)
                 .status(TransactionStatus.SUCCESS)
                 .reference(internalReference)
-                .description(adjustmentDto.description())
+                .description(adjustmentDto.description() + " (process by " + adminUser.getEmail() + ")")
                 .build();
 
         AdminActionLog adminAction = AdminActionLog.builder()
@@ -147,7 +147,7 @@ public class AdminTransactionService {
                 .externalReference(externalReference)
                 .status(TransactionStatus.SUCCESS)
                 .reference(internalReference)
-                .description(adjustmentDto.description())
+                .description(adjustmentDto.description() + " (process by " + adminUser.getEmail() + ")")
                 .build();
 
         AdminActionLog adminAction = AdminActionLog.builder()
