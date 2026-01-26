@@ -48,6 +48,8 @@ public class AuthConfigs {
                                     .requestMatchers("/api/v1/register",
                                             "/api/v1/login",
                                             "/api/v1/verify",
+                                            "/api/v1/forgotPassword",
+                                            "/api/v1/resetPassword",
                                             "/api/v1/refreshToken",
                                             "/api/v1/verifyPayment",
                                             "/v3/api-docs/**",

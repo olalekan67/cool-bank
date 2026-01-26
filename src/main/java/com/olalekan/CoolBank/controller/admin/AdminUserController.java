@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,19 +20,18 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/admin")
+@Secured("ROLE_ADMIN")
 public class AdminUserController {
 
     private final AdminUserService adminUserService;
 
     @GetMapping("users")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Page<UserSummaryBriefResponseDto>> users(Pageable pageable){
         Page<UserSummaryBriefResponseDto> users = adminUserService.getUsers(pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("users/{userId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserSummaryResponseDto> user(@PathVariable String userId){
 
         UserSummaryResponseDto user = adminUserService.getUser(userId);
@@ -39,21 +39,18 @@ public class AdminUserController {
     }
 
     @PutMapping("users/{userId}/freeze")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BaseResponseDto> freezeUser(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
         BaseResponseDto response = adminUserService.freezeUser(userId, adminFreezeUserDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("users/{userId}/unfreeze")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BaseResponseDto> unFreezeUser(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
         BaseResponseDto response = adminUserService.unFreezeUser(userId, adminFreezeUserDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("users/{userId}/kyc")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BaseResponseDto> kycUpgrade(@PathVariable String userId, @RequestBody AccountKycUpgradeDto kycUpgradeDto){
         BaseResponseDto responseDto = adminUserService.upgradeKyc(userId, kycUpgradeDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

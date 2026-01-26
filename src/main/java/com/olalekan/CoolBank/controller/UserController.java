@@ -1,5 +1,6 @@
 package com.olalekan.CoolBank.controller;
 
+import com.olalekan.CoolBank.model.BaseEntity;
 import com.olalekan.CoolBank.model.dto.*;
 import com.olalekan.CoolBank.service.UserService;
 import jakarta.validation.Valid;
@@ -43,6 +44,18 @@ public class UserController {
     public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody @Valid RefreshTokenRequestDto requestDto){
         LoginResponseDto responseDto = userService.refreshToken(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("forgotPassword")
+    public ResponseEntity<BaseResponseDto> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDto input){
+        BaseResponseDto response = userService.forgotPassword(input);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("resetPassword")
+    public ResponseEntity<BaseResponseDto> resetPassword(@RequestBody @Valid ResetPasswordRequestDto input){
+        BaseResponseDto response = userService.resetPassword(input);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

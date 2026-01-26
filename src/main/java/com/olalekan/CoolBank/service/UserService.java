@@ -5,22 +5,18 @@ import com.olalekan.CoolBank.Utils.KycTier;
 import com.olalekan.CoolBank.Utils.TokenUtils;
 import com.olalekan.CoolBank.Utils.UserRole;
 import com.olalekan.CoolBank.event.EmailVerificationEvent;
+import com.olalekan.CoolBank.event.ForgotPasswordEvent;
 import com.olalekan.CoolBank.exception.DuplicateResourceException;
 import com.olalekan.CoolBank.exception.ExpiredTokenException;
 import com.olalekan.CoolBank.exception.UserVerificationException;
-import com.olalekan.CoolBank.model.AppUser;
-import com.olalekan.CoolBank.model.RefreshToken;
-import com.olalekan.CoolBank.model.Token;
-import com.olalekan.CoolBank.model.Wallet;
+import com.olalekan.CoolBank.model.*;
 import com.olalekan.CoolBank.model.dto.*;
-import com.olalekan.CoolBank.repo.AppUserRepo;
-import com.olalekan.CoolBank.repo.RefreshTokenRepo;
-import com.olalekan.CoolBank.repo.TokenRepo;
-import com.olalekan.CoolBank.repo.WalletRepo;
+import com.olalekan.CoolBank.repo.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +36,7 @@ public class UserService {
     private final AppUserRepo userRepo;
     private final TokenRepo tokenRepo;
     private final WalletRepo walletRepo;
+    private final ForgotPasswordTokenRepo forgotPasswordTokenRepo;
     private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepo refreshTokenRepo;
     private final JwtService jwtService;
@@ -187,6 +185,56 @@ public class UserService {
                 .refreshToken(refreshToken.getToken())
                 .accessToken(accessToken)
                 .message("Token refreshed successfully.")
+                .build();
+    }
+
+    @Transactional
+    public BaseResponseDto forgotPassword(@Valid ForgotPasswordRequestDto input) {
+
+        Optional<AppUser> user = userRepo.findByEmail(input.email());
+
+        if(user.isEmpty()){
+            return BaseResponseDto.builder()
+                    .message("We have sent the reset token to your email.")
+                    .build();
+        }
+
+        String token = TokenUtils.generateToken();
+
+        ForgotPasswordToken forgotPasswordToken = ForgotPasswordToken.builder()
+                .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .token(token)
+                .user(user.get())
+                .build();
+
+        forgotPasswordTokenRepo.save(forgotPasswordToken);
+        eventPublisher.publishEvent(new ForgotPasswordEvent(user.get(), token));
+        return BaseResponseDto.builder()
+                .message("We have sent the reset token to your email.")
+                .build();
+    }
+
+    @Transactional
+    public BaseResponseDto resetPassword(@Valid ResetPasswordRequestDto input) {
+
+        ForgotPasswordToken token = forgotPasswordTokenRepo.findByToken(input.token())
+                .orElseThrow(() -> new BadCredentialsException("Invalid token"));
+
+        if(token.getExpiresAt().isBefore(LocalDateTime.now())){
+            throw new ExpiredTokenException("Token has expired please request for a new token");
+        }
+
+        if(!(input.newPassword().equals(input.confirmPassword()))){
+            throw new BadCredentialsException("new password and confirm password are not the same thing");
+        }
+
+        AppUser user = token.getUser();
+        user.setPassword(passwordEncoder.encode(input.confirmPassword()));
+        userRepo.save(user);
+        forgotPasswordTokenRepo.deleteById(token.getId());
+
+        return BaseResponseDto.builder()
+                .message("Password reset successfully")
                 .build();
     }
 }
