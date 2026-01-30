@@ -3,6 +3,7 @@ package com.olalekan.CoolBank.controller;
 import com.olalekan.CoolBank.model.dto.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.TransactionResponseDto;
 import com.olalekan.CoolBank.model.dto.TransferRequestDto;
+import com.olalekan.CoolBank.model.dto.WithdrawalRequestDto;
 import com.olalekan.CoolBank.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,12 @@ public class TransactionController {
     public ResponseEntity<TransactionResponseDto> transaction(@PathVariable("id") @Valid UUID id){
         TransactionResponseDto responseDto = transactionService.transaction(id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<BaseResponseDto> withdraw(@RequestBody @Valid WithdrawalRequestDto input){
+        BaseResponseDto response = transactionService.withdraw(input);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("history")

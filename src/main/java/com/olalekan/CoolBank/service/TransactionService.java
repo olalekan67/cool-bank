@@ -13,6 +13,7 @@ import com.olalekan.CoolBank.model.Wallet;
 import com.olalekan.CoolBank.model.dto.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.TransactionResponseDto;
 import com.olalekan.CoolBank.model.dto.TransferRequestDto;
+import com.olalekan.CoolBank.model.dto.WithdrawalRequestDto;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;
 import com.olalekan.CoolBank.repo.WalletRepo;
@@ -167,5 +168,44 @@ public class TransactionService {
                     .build();
         }).toList();
 
+    }
+
+    @Transactional
+    public BaseResponseDto withdraw(WithdrawalRequestDto input) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        AppUser user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("Invalid username or password"));
+
+        Wallet wallet = walletRepo.findByIdWithLock(user.getWallet().getId())
+                .orElseThrow(() -> new NoSuchElementException("Wallet does not exist"));
+
+        if(!passwordEncoder.matches(input.pin(), wallet.getPin())){
+            throw new BadCredentialsException("Incorrect pin");
+        }
+
+        boolean comparison = wallet.getBalance().compareTo(input.amount()) < 0;
+
+        if(comparison){
+            throw new InsufficientBalanceException("Insufficient balance");
+        }
+
+        wallet.setBalance(wallet.getBalance().subtract(input.amount()));
+        String reference = UUID.randomUUID().toString();
+        Transaction transaction = Transaction.builder()
+                .amount(input.amount())
+                .description("External mock withdrawal")
+                .sourceWallet(wallet)
+                .destinationWallet(null)
+                .type(TransactionType.WITHDRAWAL)
+                .status(TransactionStatus.SUCCESS)
+                .reference(reference)
+                .build();
+
+        walletRepo.save(wallet);
+        transactionRepo.save(transaction);
+        return BaseResponseDto.builder()
+                .message("Withdrawal done successfully")
+                .build();
     }
 }
