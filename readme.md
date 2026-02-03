@@ -1,4 +1,4 @@
-# 🏦 CoolBank - Core Banking System
+# CoolBank - Core Banking System
 
 ![Java](https://img.shields.io/badge/Java-25-orange.svg)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-green.svg)
@@ -23,7 +23,7 @@ It features a "God-Mode" **Admin Dashboard** for fraud detection, user managemen
 * **Transfers:** Atomic P2P transfers between users (ACID compliant).
 * **Withdrawals:** Mock withdrawal system simulating external bank transfers with balance validation.
 
-###  **Admin Module ("God Mode")**
+###  **Admin Module**
 * **Dashboard Analytics:** Real-time statistics on Total Volume, Active Users, and Pending KYC.
 * **User Management:**
     * **Freeze/Unfreeze** suspicious accounts.
