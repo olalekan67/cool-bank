@@ -8,7 +8,7 @@
 
 **CoolBank** is a robust, production-grade fintech backend built with Java and Spring Boot. It simulates a complete financial lifecycle, allowing users to create wallets, fund them via payment gateways, perform atomic P2P transfers, and withdraw funds.
 
-It features a "God-Mode" **Admin Dashboard** for fraud detection, user management, and audit logging, built with a secure, event-driven architecture.
+It features an **Admin Dashboard** for fraud detection, user management, and audit logging, built with a secure, event-driven architecture.
 
 ---
 
