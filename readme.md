@@ -6,7 +6,7 @@
 ![Security](https://img.shields.io/badge/Spring%20Security-JWT-red.svg)
 ![Paystack](https://img.shields.io/badge/Integration-Paystack-blueviolet.svg)
 
-**CoolBank** is a robust, production-grade fintech backend built with Java and Spring Boot. It simulates a complete financial lifecycle, allowing users to create wallets, fund them via payment gateways, perform atomic P2P transfers, and withdraw funds.
+**CoolBank** is a fintech backend built with Java and Spring Boot. It simulates a complete financial lifecycle, allowing users to create wallets, fund them via payment gateways(Paystack), perform atomic P2P transfers, and withdraw funds.
 
 It features an **Admin Dashboard** for fraud detection, user management, and audit logging, built with a secure, event-driven architecture.
 
