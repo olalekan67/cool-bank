@@ -3,8 +3,19 @@ package com.olalekan.CoolBank.model;
 import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.KycTier;
 import com.olalekan.CoolBank.Utils.UserRole;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")

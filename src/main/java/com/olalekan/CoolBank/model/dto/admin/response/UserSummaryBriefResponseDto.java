@@ -1,9 +1,7 @@
-package com.olalekan.CoolBank.model.dto.admin;
+package com.olalekan.CoolBank.model.dto.admin.response;
 
 import lombok.Builder;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 @Builder
 

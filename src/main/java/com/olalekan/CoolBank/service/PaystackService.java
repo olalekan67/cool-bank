@@ -10,14 +10,19 @@ import com.olalekan.CoolBank.exception.PaymentVerificationException;
 import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.Transaction;
 import com.olalekan.CoolBank.model.Wallet;
-import com.olalekan.CoolBank.model.dto.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.IntialisePaymentResponse;
+import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.response.IntialisePaymentResponse;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;
 import com.olalekan.CoolBank.repo.WalletRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -48,8 +53,10 @@ public class PaystackService {
     @Value("${base.url}")
     private String baseUrl;
 
-    private final String PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
-    private final String PAYSTACK_VERIFY_URL = "https://api.paystack.co/transaction/verify/";
+    @Value("${PAYSTACK_INIT_URL}")
+    private final String PAYSTACK_INIT_URL;
+    @Value("${PAYSTACK_VERIFY_URL}")
+    private final String PAYSTACK_VERIFY_URL;
 
     @Transactional(noRollbackFor = PaymentInitializationException.class)
     public IntialisePaymentResponse initializePayment(BigDecimal amount){

@@ -1,13 +1,19 @@
 package com.olalekan.CoolBank.controller;
 
-import com.olalekan.CoolBank.model.BaseEntity;
-import com.olalekan.CoolBank.model.dto.*;
+import com.olalekan.CoolBank.model.dto.request.ForgotPasswordRequestDto;
+import com.olalekan.CoolBank.model.dto.request.LoginRequestDto;
+import com.olalekan.CoolBank.model.dto.request.RefreshTokenRequestDto;
+import com.olalekan.CoolBank.model.dto.request.RegisterRequestDto;
+import com.olalekan.CoolBank.model.dto.request.ResetPasswordRequestDto;
+import com.olalekan.CoolBank.model.dto.request.VerifyTokenRequestDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
+import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.response.LoginResponseDto;
 import com.olalekan.CoolBank.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,14 +27,13 @@ public class UserController {
 
 
     @PostMapping("register")
-    public ResponseEntity<BaseResponseDto> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
+    public ResponseEntity<BaseResponseDto> registerUsers(@RequestBody @Valid RegisterRequestDto registerRequestDto){
         BaseResponseDto registerResponseDto = userService.register(registerRequestDto);
         return new ResponseEntity<>(registerResponseDto, HttpStatus.CREATED);
-
     }
 
     @PostMapping("verify")
-    public ResponseEntity<BaseResponseDto> verify(@RequestBody @Valid VerifyTokenRequestDto verifyTokenRequestDto){
+    public ResponseEntity<BaseResponseDto> verifyUsers(@RequestBody @Valid VerifyTokenRequestDto verifyTokenRequestDto){
         String userToken = verifyTokenRequestDto.token();
         BaseResponseDto tokenResponse = userService.verify(userToken);
         return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
@@ -41,13 +46,13 @@ public class UserController {
     }
 
     @PostMapping("refreshToken")
-    public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody @Valid RefreshTokenRequestDto requestDto){
+    public ResponseEntity<LoginResponseDto> refreshTokens(@RequestBody @Valid RefreshTokenRequestDto requestDto){
         LoginResponseDto responseDto = userService.refreshToken(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @PostMapping("forgotPassword")
-    public ResponseEntity<BaseResponseDto> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDto input){
+    public ResponseEntity<BaseResponseDto> forgotPasswords(@RequestBody @Valid ForgotPasswordRequestDto input){
         BaseResponseDto response = userService.forgotPassword(input);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

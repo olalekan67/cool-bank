@@ -1,4 +1,4 @@
-package com.olalekan.CoolBank.model.dto.admin;
+package com.olalekan.CoolBank.model.dto.admin.request;
 
 import com.olalekan.CoolBank.Utils.KycTier;
 import jakarta.validation.constraints.NotBlank;

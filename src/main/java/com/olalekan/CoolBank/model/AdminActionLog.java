@@ -2,7 +2,6 @@ package com.olalekan.CoolBank.model;
 
 import com.olalekan.CoolBank.Utils.AdminActionType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;

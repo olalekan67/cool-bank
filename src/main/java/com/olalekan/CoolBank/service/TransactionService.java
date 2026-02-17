@@ -10,10 +10,10 @@ import com.olalekan.CoolBank.exception.UnauthorizeUserException;
 import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.Transaction;
 import com.olalekan.CoolBank.model.Wallet;
-import com.olalekan.CoolBank.model.dto.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.TransactionResponseDto;
-import com.olalekan.CoolBank.model.dto.TransferRequestDto;
-import com.olalekan.CoolBank.model.dto.WithdrawalRequestDto;
+import com.olalekan.CoolBank.model.dto.request.TransferRequestDto;
+import com.olalekan.CoolBank.model.dto.request.WithdrawalRequestDto;
+import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.response.TransactionResponseDto;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;
 import com.olalekan.CoolBank.repo.WalletRepo;
@@ -136,7 +136,7 @@ public class TransactionService {
                 .build();
     }
 
-    public List<TransactionResponseDto> history() {
+    public List<TransactionResponseDto> histories() {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 

@@ -1,15 +1,20 @@
 package com.olalekan.CoolBank.controller;
 
-import com.olalekan.CoolBank.model.dto.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.TransactionResponseDto;
-import com.olalekan.CoolBank.model.dto.TransferRequestDto;
-import com.olalekan.CoolBank.model.dto.WithdrawalRequestDto;
+import com.olalekan.CoolBank.model.dto.request.TransferRequestDto;
+import com.olalekan.CoolBank.model.dto.request.WithdrawalRequestDto;
+import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.response.TransactionResponseDto;
 import com.olalekan.CoolBank.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +27,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("transfer")
-    public ResponseEntity<BaseResponseDto> transfer(@RequestBody @Valid TransferRequestDto requestDto){
+    public ResponseEntity<BaseResponseDto> transfers(@RequestBody @Valid TransferRequestDto requestDto){
         BaseResponseDto responseDto = transactionService.transfer(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
@@ -34,14 +39,14 @@ public class TransactionController {
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<BaseResponseDto> withdraw(@RequestBody @Valid WithdrawalRequestDto input){
+    public ResponseEntity<BaseResponseDto> withdrawals(@RequestBody @Valid WithdrawalRequestDto input){
         BaseResponseDto response = transactionService.withdraw(input);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("history")
     public ResponseEntity<List<TransactionResponseDto>> transactions(){
-        List<TransactionResponseDto> transactionResponseDtoList = transactionService.history();
+        List<TransactionResponseDto> transactionResponseDtoList = transactionService.histories();
         return new ResponseEntity<>(transactionResponseDtoList, HttpStatus.OK);
     }
 }

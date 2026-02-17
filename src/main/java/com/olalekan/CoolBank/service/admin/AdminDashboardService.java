@@ -2,8 +2,8 @@ package com.olalekan.CoolBank.service.admin;
 
 import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.TransactionStatus;
-import com.olalekan.CoolBank.model.dto.admin.AdminActionLogResponseDto;
-import com.olalekan.CoolBank.model.dto.admin.AdminDashboardStatDto;
+import com.olalekan.CoolBank.model.dto.admin.request.AdminDashboardStatDto;
+import com.olalekan.CoolBank.model.dto.admin.response.AdminActionLogResponseDto;
 import com.olalekan.CoolBank.repo.AdminActionLogRepo;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;

@@ -6,11 +6,11 @@ import com.olalekan.CoolBank.Utils.UserRole;
 import com.olalekan.CoolBank.exception.UserNotFoundException;
 import com.olalekan.CoolBank.model.AdminActionLog;
 import com.olalekan.CoolBank.model.AppUser;
-import com.olalekan.CoolBank.model.dto.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.admin.AccountKycUpgradeDto;
-import com.olalekan.CoolBank.model.dto.admin.AdminFreezeUserDto;
-import com.olalekan.CoolBank.model.dto.admin.UserSummaryBriefResponseDto;
-import com.olalekan.CoolBank.model.dto.admin.UserSummaryResponseDto;
+import com.olalekan.CoolBank.model.dto.admin.request.AccountKycUpgradeDto;
+import com.olalekan.CoolBank.model.dto.admin.request.AdminFreezeUserDto;
+import com.olalekan.CoolBank.model.dto.admin.response.UserSummaryBriefResponseDto;
+import com.olalekan.CoolBank.model.dto.admin.response.UserSummaryResponseDto;
+import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.repo.AdminActionLogRepo;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service

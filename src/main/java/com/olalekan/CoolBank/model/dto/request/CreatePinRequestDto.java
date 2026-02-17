@@ -1,6 +1,5 @@
-package com.olalekan.CoolBank.model.dto;
+package com.olalekan.CoolBank.model.dto.request;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 

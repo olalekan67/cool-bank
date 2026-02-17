@@ -1,4 +1,4 @@
-package com.olalekan.CoolBank.model.dto.admin;
+package com.olalekan.CoolBank.model.dto.admin.response;
 
 import lombok.Builder;
 

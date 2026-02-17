@@ -10,10 +10,10 @@ import com.olalekan.CoolBank.model.AdminActionLog;
 import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.Transaction;
 import com.olalekan.CoolBank.model.Wallet;
-import com.olalekan.CoolBank.model.dto.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.TransactionResponseDto;
-import com.olalekan.CoolBank.model.dto.admin.AdminTransactionAdjustmentDto;
-import com.olalekan.CoolBank.model.dto.admin.AdminTransactionResponseBrief;
+import com.olalekan.CoolBank.model.dto.admin.request.AdminTransactionAdjustmentDto;
+import com.olalekan.CoolBank.model.dto.admin.response.AdminTransactionResponseBrief;
+import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.response.TransactionResponseDto;
 import com.olalekan.CoolBank.repo.AdminActionLogRepo;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;
@@ -26,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service

@@ -1,4 +1,4 @@
-package com.olalekan.CoolBank.model.dto;
+package com.olalekan.CoolBank.model.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
