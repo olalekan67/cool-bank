@@ -3,7 +3,7 @@ package com.olalekan.CoolBank.controller;
 import com.olalekan.CoolBank.model.dto.request.FundRequestDto;
 import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.response.IntialisePaymentResponse;
-import com.olalekan.CoolBank.service.PaystackService;
+import com.olalekan.CoolBank.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,20 +19,20 @@ import java.math.BigDecimal;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/funding")
 public class ExternalFundingController {
 
-    private final PaystackService paystackService;
+    private final PaymentService paymentService;
 
     @PostMapping("fund")
     public ResponseEntity<IntialisePaymentResponse> fundAccounts(@RequestBody @Valid FundRequestDto requestDto){
-        IntialisePaymentResponse response = paystackService.initializePayment(BigDecimal.valueOf(requestDto.amount()));
+        IntialisePaymentResponse response = paymentService.initializePayment(BigDecimal.valueOf(requestDto.amount()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("verifyPayment")
     public ResponseEntity<BaseResponseDto> verifyPayments(@RequestParam("reference") String reference){
-        BaseResponseDto responseDto = paystackService.verifyPayment(reference);
+        BaseResponseDto responseDto = paymentService.verifyPayment(reference);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

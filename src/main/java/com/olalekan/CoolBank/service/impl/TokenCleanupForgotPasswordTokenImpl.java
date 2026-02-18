@@ -1,6 +1,7 @@
-package com.olalekan.CoolBank.service;
+package com.olalekan.CoolBank.service.impl;
 
 import com.olalekan.CoolBank.repo.ForgotPasswordTokenRepo;
+import com.olalekan.CoolBank.service.TokenCleanupService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class ForgotPasswordTokenCleanUpService {
+public class TokenCleanupForgotPasswordTokenImpl implements TokenCleanupService {
     private final ForgotPasswordTokenRepo forgotPasswordTokenRepo;
 
     @Scheduled(cron = "0 * * * * *")
@@ -19,7 +20,7 @@ public class ForgotPasswordTokenCleanUpService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        int deletedCount = forgotPasswordTokenRepo.deleteByExpiredAtBefore(now);
+        int deletedCount = forgotPasswordTokenRepo.deleteByExpiresAtBefore(now);
 
         System.out.println("Cleanup job executed. Deleted " + deletedCount + " forgot password expired tokens.");
     }

@@ -27,27 +27,27 @@ public class AdminTransactionController {
     private final AdminTransactionService adminTransactionService;
 
    @GetMapping("/")
-   public ResponseEntity<Page<AdminTransactionResponseBrief>> transactions(Pageable pageable){
+   public ResponseEntity<Page<AdminTransactionResponseBrief>> getTransactions(Pageable pageable){
        Page<AdminTransactionResponseBrief> resonses = adminTransactionService.transactions(pageable);
        return new ResponseEntity<>(resonses, HttpStatus.OK);
    }
 
    @GetMapping("/{reference}")
-   public ResponseEntity<TransactionResponseDto> transaction(@PathVariable String reference){
-        TransactionResponseDto responseDto = adminTransactionService.transaction(reference);
+   public ResponseEntity<TransactionResponseDto> getTransaction(@PathVariable String reference){
+        TransactionResponseDto responseDto = adminTransactionService.getTransaction(reference);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
    }
 
 
    @PostMapping("/credit")
-   public ResponseEntity<BaseResponseDto> credits(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
-       BaseResponseDto responseDto = adminTransactionService.credit(adjustmentDto);
+   public ResponseEntity<BaseResponseDto> creditUserAccounts(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
+       BaseResponseDto responseDto = adminTransactionService.creditAccount(adjustmentDto);
        return new ResponseEntity<>(responseDto, HttpStatus.OK);
    }
 
     @PostMapping("/debit")
-    public ResponseEntity<BaseResponseDto> debits(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
-        BaseResponseDto responseDto = adminTransactionService.debit(adjustmentDto);
+    public ResponseEntity<BaseResponseDto> debitUserAccount(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
+        BaseResponseDto responseDto = adminTransactionService.debitAccount(adjustmentDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

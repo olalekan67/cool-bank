@@ -11,5 +11,5 @@ public interface ForgotPasswordTokenRepo extends JpaRepository<ForgotPasswordTok
 
     Optional<ForgotPasswordToken> findByToken(String token);
 
-    int deleteByExpiredAtBefore(LocalDateTime now);
+    int deleteByExpiresAtBefore(LocalDateTime now);
 }

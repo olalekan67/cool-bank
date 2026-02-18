@@ -1,4 +1,4 @@
-package com.olalekan.CoolBank.service;
+package com.olalekan.CoolBank.service.impl;
 
 import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.TransactionStatus;
@@ -15,6 +15,7 @@ import com.olalekan.CoolBank.model.dto.response.IntialisePaymentResponse;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;
 import com.olalekan.CoolBank.repo.WalletRepo;
+import com.olalekan.CoolBank.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -40,7 +41,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PaystackService {
+public class PaymentServicePaystackImpl implements PaymentService {
 
     private final AppUserRepo userRepo;
     private final WalletRepo walletRepo;
@@ -53,10 +54,10 @@ public class PaystackService {
     @Value("${base.url}")
     private String baseUrl;
 
-    @Value("${PAYSTACK_INIT_URL}")
-    private final String PAYSTACK_INIT_URL;
-    @Value("${PAYSTACK_VERIFY_URL}")
-    private final String PAYSTACK_VERIFY_URL;
+    @Value("${paystack.init.url}")
+    private String paystackInitUrl;
+    @Value("${paystack.verify.url}")
+    private String paystackVerifyUrl;
 
     @Transactional(noRollbackFor = PaymentInitializationException.class)
     public IntialisePaymentResponse initializePayment(BigDecimal amount){
@@ -103,7 +104,7 @@ public class PaystackService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<Map> response = restTemplate.postForEntity(PAYSTACK_INIT_URL, entity, Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(paystackInitUrl, entity, Map.class);
 
             if(response.getStatusCode() == HttpStatus.OK && response.getBody() != null){
 
@@ -135,7 +136,7 @@ public class PaystackService {
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<Map> response = restTemplate.exchange(
-                    PAYSTACK_VERIFY_URL + reference,
+                    paystackVerifyUrl + reference,
                     HttpMethod.GET,
                     entity,
                     Map.class

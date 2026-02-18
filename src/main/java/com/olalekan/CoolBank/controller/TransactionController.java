@@ -21,20 +21,20 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/transaction")
+@RequestMapping("api/v1/transactions")
 public class TransactionController {
 
     private final TransactionService transactionService;
 
-    @PostMapping("transfer")
-    public ResponseEntity<BaseResponseDto> transfers(@RequestBody @Valid TransferRequestDto requestDto){
+    @PostMapping("/transfer")
+    public ResponseEntity<BaseResponseDto> transfer(@RequestBody @Valid TransferRequestDto requestDto){
         BaseResponseDto responseDto = transactionService.transfer(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionResponseDto> transaction(@PathVariable("id") @Valid UUID id){
-        TransactionResponseDto responseDto = transactionService.transaction(id);
+    public ResponseEntity<TransactionResponseDto> transactions(@PathVariable("id") @Valid UUID id){
+        TransactionResponseDto responseDto = transactionService.getTransaction(id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
@@ -44,8 +44,8 @@ public class TransactionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("history")
-    public ResponseEntity<List<TransactionResponseDto>> transactions(){
+    @GetMapping("/history")
+    public ResponseEntity<List<TransactionResponseDto>> transactionsHistory(){
         List<TransactionResponseDto> transactionResponseDtoList = transactionService.histories();
         return new ResponseEntity<>(transactionResponseDtoList, HttpStatus.OK);
     }

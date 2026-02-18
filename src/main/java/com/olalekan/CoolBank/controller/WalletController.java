@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/wallets")
 public class WalletController {
     public final WalletService walletService;
 
@@ -38,7 +38,7 @@ public class WalletController {
 
     @GetMapping("balance")
     public ResponseEntity<BalanceResponseDto> balance(){
-        BalanceResponseDto responseDto = walletService.balance();
+        BalanceResponseDto responseDto = walletService.getBalance();
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
