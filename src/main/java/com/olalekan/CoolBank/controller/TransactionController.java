@@ -2,8 +2,7 @@ package com.olalekan.CoolBank.controller;
 
 import com.olalekan.CoolBank.model.dto.request.TransferRequestDto;
 import com.olalekan.CoolBank.model.dto.request.WithdrawalRequestDto;
-import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.response.TransactionResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,26 +25,30 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/transfer")
-    public ResponseEntity<BaseResponseDto> transfer(@RequestBody @Valid TransferRequestDto requestDto){
-        BaseResponseDto responseDto = transactionService.transfer(requestDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> transfer(@RequestBody @Valid TransferRequestDto requestDto){
+//        BaseResponseDto responseDto = transactionService.transfer(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(transactionService.transfer(requestDto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionResponseDto> transactions(@PathVariable("id") @Valid UUID id){
-        TransactionResponseDto responseDto = transactionService.getTransaction(id);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> transactions(@PathVariable("id") @Valid UUID id){
+//        TransactionResponseDto responseDto = transactionService.getTransaction(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(transactionService.getTransaction(id));
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<BaseResponseDto> withdrawals(@RequestBody @Valid WithdrawalRequestDto input){
-        BaseResponseDto response = transactionService.withdraw(input);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> withdrawals(@RequestBody @Valid WithdrawalRequestDto input){
+//        BaseResponseDto response = transactionService.withdraw(input);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(transactionService.withdraw(input));
     }
 
     @GetMapping("/history")
-    public ResponseEntity<List<TransactionResponseDto>> transactionsHistory(){
-        List<TransactionResponseDto> transactionResponseDtoList = transactionService.histories();
-        return new ResponseEntity<>(transactionResponseDtoList, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> transactionsHistory(){
+//        List<TransactionResponseDto> transactionResponseDtoList = transactionService.histories();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(transactionService.histories());
     }
 }

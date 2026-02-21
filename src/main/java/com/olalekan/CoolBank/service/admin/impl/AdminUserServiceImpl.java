@@ -10,6 +10,7 @@ import com.olalekan.CoolBank.model.dto.admin.request.AccountKycUpgradeDto;
 import com.olalekan.CoolBank.model.dto.admin.request.AdminFreezeUserDto;
 import com.olalekan.CoolBank.model.dto.admin.response.UserSummaryBriefResponseDto;
 import com.olalekan.CoolBank.model.dto.admin.response.UserSummaryResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.repo.AdminActionLogRepo;
 import com.olalekan.CoolBank.repo.AppUserRepo;
@@ -21,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,27 +31,33 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final AppUserRepo userRepo;
     private final AdminActionLogRepo adminActionLogRepo;
 
-    public Page<UserSummaryBriefResponseDto> getUsers(Pageable pageable) {
+    public ApiResponse getUsers(Pageable pageable) {
 
-        return userRepo.findAll(pageable)
+        Page<UserSummaryBriefResponseDto> users = userRepo.findAll(pageable)
                 .map(user -> (
                         UserSummaryBriefResponseDto.builder()
-                         .userId(user.getId())
-                         .email(user.getEmail())
-                         .kycTier(user.getKycTier().toString())
-                         .phoneNumber(user.getPhoneNumber())
-                         .fullName(user.getFullName())
-                        .build()
+                                .userId(user.getId())
+                                .email(user.getEmail())
+                                .kycTier(user.getKycTier().toString())
+                                .phoneNumber(user.getPhoneNumber())
+                                .fullName(user.getFullName())
+                                .build()
                 ));
+
+        return ApiResponse.builder()
+                        .error(false)
+                        .message("All Users")
+                        .data(users)
+                        .build();
 
     }
 
-    public UserSummaryResponseDto getUser(String userId) {
+    public ApiResponse getUser(String userId) {
 
         AppUser user = userRepo.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new UserNotFoundException("User does not exist"));
 
-        return UserSummaryResponseDto.builder()
+        UserSummaryResponseDto userSummary = UserSummaryResponseDto.builder()
                 .activeStatus(user.getActiveStatus().toString())
                 .createdAt(user.getCreatedAt())
                 .email(user.getEmail())
@@ -59,11 +67,17 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .userId(user.getId())
                 .walletBalance(user.getWallet().getBalance())
                 .build();
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("Get single User")
+                .data(userSummary)
+                .build();
     }
 
 
     @Transactional
-    public BaseResponseDto freezeUser(String userId, AdminFreezeUserDto adminFreezeUserDto) {
+    public ApiResponse freezeUser(String userId, AdminFreezeUserDto adminFreezeUserDto) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -74,19 +88,22 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .orElseThrow(() -> new UserNotFoundException("User does not exist"));
 
         if(user.getRole() == UserRole.ADMIN){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(true)
                     .message("You cannot freeze an admin account")
                     .build();
         }
 
         if(user.getActiveStatus() == ActiveStatus.BANNED){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(true)
                     .message("This user account has already been frozen")
                     .build();
         }
 
         if(user.getActiveStatus() == ActiveStatus.PENDING_VERIFICATION){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(true)
                     .message("This user has not verified his account")
                     .build();
         }
@@ -101,13 +118,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         userRepo.save(user);
         adminActionLogRepo.save(adminAction);
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("User account with email: " + user.getEmail() + ", has been frozen successfully")
+                .data(user)
                 .build();
     }
 
     @Transactional
-    public BaseResponseDto unFreezeUser(String userId, AdminFreezeUserDto adminFreezeUserDto) {
+    public ApiResponse unFreezeUser(String userId, AdminFreezeUserDto adminFreezeUserDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         AppUser adminUser = userRepo.findByEmail(email)
@@ -117,13 +136,15 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .orElseThrow(() -> new UserNotFoundException("User does not exist"));
 
         if(user.getActiveStatus() == ActiveStatus.ACTIVE){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(false)
                     .message("This user account is already active")
                     .build();
         }
 
         if(user.getActiveStatus() == ActiveStatus.PENDING_VERIFICATION){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(false)
                     .message("This user has not verified his account")
                     .build();
         }
@@ -138,13 +159,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         userRepo.save(user);
         adminActionLogRepo.save(adminAction);
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("User account with email: " + user.getEmail() + ", has been unfrozen successfully")
+                .data(user)
                 .build();
     }
 
     @Transactional
-    public BaseResponseDto upgradeKyc(String userId, AccountKycUpgradeDto kycUpgradeDto) {
+    public ApiResponse upgradeKyc(String userId, AccountKycUpgradeDto kycUpgradeDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         AppUser adminUser = userRepo.findByEmail(email)
@@ -154,13 +177,15 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .orElseThrow(() -> new UserNotFoundException("User does not exist"));
 
         if(user.getActiveStatus() == ActiveStatus.PENDING_VERIFICATION){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(true)
                     .message("Please verify your email first before you proceed")
                     .build();
         }
 
         if(user.getActiveStatus() == ActiveStatus.SUSPENDED){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(true)
                     .message("This user account has been frozen, please resolve the issue before you proceed")
                     .build();
         }
@@ -169,7 +194,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
 
         if(comparison >= 0){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(true)
                     .message("New KYC tier must be greater than old tier")
                     .build();
         }
@@ -184,8 +210,10 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         userRepo.save(user);
         adminActionLogRepo.save(adminAction);
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("This user has been successfully upgraded to " + user.getKycTier())
+                .data(user)
                 .build();
     }
 }

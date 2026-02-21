@@ -1,12 +1,9 @@
 package com.olalekan.CoolBank.controller.admin;
 
 import com.olalekan.CoolBank.model.dto.admin.request.AdminTransactionAdjustmentDto;
-import com.olalekan.CoolBank.model.dto.admin.response.AdminTransactionResponseBrief;
-import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.response.TransactionResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.service.admin.AdminTransactionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,28 +24,32 @@ public class AdminTransactionController {
     private final AdminTransactionService adminTransactionService;
 
    @GetMapping("/")
-   public ResponseEntity<Page<AdminTransactionResponseBrief>> getTransactions(Pageable pageable){
-       Page<AdminTransactionResponseBrief> resonses = adminTransactionService.transactions(pageable);
-       return new ResponseEntity<>(resonses, HttpStatus.OK);
+   public ResponseEntity<ApiResponse> getTransactions(Pageable pageable){
+//       Page<AdminTransactionResponseBrief> resonses = adminTransactionService.transactions(pageable);
+       return ResponseEntity.status(HttpStatus.OK)
+               .body(adminTransactionService.transactions(pageable));
    }
 
    @GetMapping("/{reference}")
-   public ResponseEntity<TransactionResponseDto> getTransaction(@PathVariable String reference){
-        TransactionResponseDto responseDto = adminTransactionService.getTransaction(reference);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+   public ResponseEntity<ApiResponse> getTransaction(@PathVariable String reference){
+//        TransactionResponseDto responseDto = adminTransactionService.getTransaction(reference);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adminTransactionService.getTransaction(reference));
    }
 
 
    @PostMapping("/credit")
-   public ResponseEntity<BaseResponseDto> creditUserAccounts(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
-       BaseResponseDto responseDto = adminTransactionService.creditAccount(adjustmentDto);
-       return new ResponseEntity<>(responseDto, HttpStatus.OK);
+   public ResponseEntity<ApiResponse> creditUserAccounts(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
+//       BaseResponseDto responseDto = adminTransactionService.creditAccount(adjustmentDto);
+       return ResponseEntity.status(HttpStatus.OK)
+               .body(adminTransactionService.creditAccount(adjustmentDto));
    }
 
     @PostMapping("/debit")
-    public ResponseEntity<BaseResponseDto> debitUserAccount(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
-        BaseResponseDto responseDto = adminTransactionService.debitAccount(adjustmentDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> debitUserAccount(@RequestBody AdminTransactionAdjustmentDto adjustmentDto){
+//        BaseResponseDto responseDto = adminTransactionService.debitAccount(adjustmentDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adminTransactionService.debitAccount(adjustmentDto));
     }
 
 }

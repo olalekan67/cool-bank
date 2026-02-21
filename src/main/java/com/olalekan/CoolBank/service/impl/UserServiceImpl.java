@@ -19,6 +19,7 @@ import com.olalekan.CoolBank.model.dto.request.LoginRequestDto;
 import com.olalekan.CoolBank.model.dto.request.RefreshTokenRequestDto;
 import com.olalekan.CoolBank.model.dto.request.RegisterRequestDto;
 import com.olalekan.CoolBank.model.dto.request.ResetPasswordRequestDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.response.LoginResponseDto;
 import com.olalekan.CoolBank.repo.AppUserRepo;
@@ -35,6 +36,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -62,7 +64,7 @@ public class UserServiceImpl implements UserService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public BaseResponseDto registerUsers(RegisterRequestDto registerRequestDto) {
+    public ApiResponse registerUsers(RegisterRequestDto registerRequestDto) {
 
         if(userRepo.existsByEmail(registerRequestDto.email())){
             throw new DuplicateResourceException("Email already exist");
@@ -107,13 +109,16 @@ public class UserServiceImpl implements UserService {
 
         eventPublisher.publishEvent(new EmailVerificationEvent(user, generatedToken));
 
-        return BaseResponseDto.builder()
-                .message("User registered successfully, please go ahead and verify your email.")
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("User created successfully")
+                .data(user)
                 .build();
     }
 
     @Transactional
-    public BaseResponseDto verifyUsers(String userToken) {
+    public ApiResponse verifyUsers(String userToken) {
         Token token = tokenRepo.findByToken(userToken)
                 .orElseThrow(() -> new NoSuchElementException("Invalid token"));
 
@@ -124,7 +129,8 @@ public class UserServiceImpl implements UserService {
         AppUser user = token.getUser();
 
         if(user.getActiveStatus() == ActiveStatus.ACTIVE){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(true)
                     .message("User has already been verified")
                     .build();
         }
@@ -134,13 +140,15 @@ public class UserServiceImpl implements UserService {
 
         tokenRepo.delete(token);
 
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("User verified successfully")
+                .data(user)
                 .build();
     }
 
     @Transactional
-    public LoginResponseDto login(LoginRequestDto requestDto) {
+    public ApiResponse login(LoginRequestDto requestDto) {
 
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -178,15 +186,19 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtService.generateToken(userDetails.getUsername());
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-
-        return LoginResponseDto.builder()
+        LoginResponseDto loginRes = LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getToken())
+                .build();
+
+        return ApiResponse.builder()
+                .error(false)
                 .message("User logged in successfully")
+                .data(loginRes)
                 .build();
     }
 
-    public LoginResponseDto refreshToken(RefreshTokenRequestDto requestDto) {
+    public ApiResponse refreshToken(RefreshTokenRequestDto requestDto) {
 
         RefreshToken refreshToken = refreshTokenRepo.findByToken(requestDto.refreshToken())
                 .orElseThrow(()-> new NoSuchElementException("Invalid refresh token"));
@@ -197,20 +209,27 @@ public class UserServiceImpl implements UserService {
 
         String accessToken = jwtService.generateToken(user.getEmail());
 
-        return LoginResponseDto.builder()
+        LoginResponseDto loginRes = LoginResponseDto.builder()
                 .refreshToken(refreshToken.getToken())
                 .accessToken(accessToken)
+
+                .build();
+
+        return ApiResponse.builder()
+                .error(false)
                 .message("Token refreshed successfully.")
+                .data(loginRes)
                 .build();
     }
 
     @Transactional
-    public BaseResponseDto forgotPassword(ForgotPasswordRequestDto input) {
+    public ApiResponse forgotPassword(ForgotPasswordRequestDto input) {
 
         Optional<AppUser> user = userRepo.findByEmail(input.email());
 
         if(user.isEmpty()){
-            return BaseResponseDto.builder()
+            return ApiResponse.builder()
+                    .error(false)
                     .message("We have sent the reset token to your email.")
                     .build();
         }
@@ -225,13 +244,14 @@ public class UserServiceImpl implements UserService {
 
         forgotPasswordTokenRepo.save(forgotPasswordToken);
         eventPublisher.publishEvent(new ForgotPasswordEvent(user.get(), token));
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("We have sent the reset token to your email.")
                 .build();
     }
 
     @Transactional
-    public BaseResponseDto resetPassword(ResetPasswordRequestDto input) {
+    public ApiResponse resetPassword(ResetPasswordRequestDto input) {
 
         ForgotPasswordToken token = forgotPasswordTokenRepo.findByToken(input.token())
                 .orElseThrow(() -> new BadCredentialsException("Invalid token"));
@@ -249,7 +269,8 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
         forgotPasswordTokenRepo.deleteById(token.getId());
 
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("Password reset successfully")
                 .build();
     }

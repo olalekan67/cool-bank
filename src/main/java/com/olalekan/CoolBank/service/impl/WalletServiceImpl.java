@@ -4,6 +4,7 @@ import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.Wallet;
 import com.olalekan.CoolBank.model.dto.request.CreatePinRequestDto;
 import com.olalekan.CoolBank.model.dto.request.UpdatePinRequestDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.model.dto.response.BalanceResponseDto;
 import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.repo.AppUserRepo;
@@ -27,7 +28,7 @@ public class WalletServiceImpl implements WalletService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public BaseResponseDto createPin(CreatePinRequestDto requestDto) {
+    public ApiResponse createPin(CreatePinRequestDto requestDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(email == null){
@@ -51,13 +52,14 @@ public class WalletServiceImpl implements WalletService {
         wallet.setPin(passwordEncoder.encode(requestDto.pin()));
         walletRepo.save(wallet);
 
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("Pin set successfully")
                 .build();
 
     }
 
-    public BalanceResponseDto getBalance() {
+    public ApiResponse getBalance() {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -67,15 +69,21 @@ public class WalletServiceImpl implements WalletService {
         Wallet wallet = walletRepo.findByUserId(user.getId())
                 .orElseThrow(() -> new NoSuchElementException("Invalid user"));
 
-        return BalanceResponseDto.builder()
+        BalanceResponseDto balanceRes = BalanceResponseDto.builder()
                 .id(wallet.getId())
                 .fullName(user.getFullName())
                 .balance(wallet.getBalance())
                 .build();
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("This is the current user balance")
+                .data(balanceRes)
+                .build();
     }
 
     @Transactional
-    public BaseResponseDto changePin(UpdatePinRequestDto requestDto) {
+    public ApiResponse changePin(UpdatePinRequestDto requestDto) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -94,7 +102,8 @@ public class WalletServiceImpl implements WalletService {
 
         wallet.setPin(passwordEncoder.encode(requestDto.newPin()));
         walletRepo.save(wallet);
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("Pin updated successfully")
                 .build();
     }

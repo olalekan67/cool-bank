@@ -6,8 +6,7 @@ import com.olalekan.CoolBank.model.dto.request.RefreshTokenRequestDto;
 import com.olalekan.CoolBank.model.dto.request.RegisterRequestDto;
 import com.olalekan.CoolBank.model.dto.request.ResetPasswordRequestDto;
 import com.olalekan.CoolBank.model.dto.request.VerifyTokenRequestDto;
-import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
-import com.olalekan.CoolBank.model.dto.response.LoginResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,40 +25,46 @@ public class UserController {
 
 
     @PostMapping("register")
-    public ResponseEntity<BaseResponseDto> registerUsers(@RequestBody @Valid RegisterRequestDto registerRequestDto){
-        BaseResponseDto registerResponseDto = userService.registerUsers(registerRequestDto);
-        return new ResponseEntity<>(registerResponseDto, HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> registerUsers(@RequestBody @Valid RegisterRequestDto registerRequestDto){
+//        BaseResponseDto registerResponseDto = userService.registerUsers(registerRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.registerUsers(registerRequestDto));
     }
 
     @PostMapping("verify")
-    public ResponseEntity<BaseResponseDto> verifyUsers(@RequestBody @Valid VerifyTokenRequestDto verifyTokenRequestDto){
+    public ResponseEntity<ApiResponse> verifyUsers(@RequestBody @Valid VerifyTokenRequestDto verifyTokenRequestDto){
         String userToken = verifyTokenRequestDto.token();
-        BaseResponseDto tokenResponse = userService.verifyUsers(userToken);
-        return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
+//        BaseResponseDto tokenResponse = userService.verifyUsers(userToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.verifyUsers(userToken));
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto requestDto){
-        LoginResponseDto responseDto = userService.login(requestDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> login(@RequestBody @Valid LoginRequestDto requestDto){
+//        LoginResponseDto responseDto = userService.login(requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.login(requestDto));
     }
 
     @PostMapping("refreshToken")
-    public ResponseEntity<LoginResponseDto> refreshTokens(@RequestBody @Valid RefreshTokenRequestDto requestDto){
-        LoginResponseDto responseDto = userService.refreshToken(requestDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> refreshTokens(@RequestBody @Valid RefreshTokenRequestDto requestDto){
+//        LoginResponseDto responseDto = userService.refreshToken(requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.refreshToken(requestDto));
     }
 
     @PostMapping("forgotPassword")
-    public ResponseEntity<BaseResponseDto> forgotPasswords(@RequestBody @Valid ForgotPasswordRequestDto input){
-        BaseResponseDto response = userService.forgotPassword(input);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> forgotPasswords(@RequestBody @Valid ForgotPasswordRequestDto input){
+//        BaseResponseDto response = userService.forgotPassword(input);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.forgotPassword(input));
     }
 
     @PostMapping("resetPassword")
-    public ResponseEntity<BaseResponseDto> resetPassword(@RequestBody @Valid ResetPasswordRequestDto input){
-        BaseResponseDto response = userService.resetPassword(input);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordRequestDto input){
+//        BaseResponseDto response = userService.resetPassword(input);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.resetPassword(input));
     }
 
 }

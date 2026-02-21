@@ -4,6 +4,7 @@ import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.TransactionStatus;
 import com.olalekan.CoolBank.model.dto.admin.request.AdminDashboardStatDto;
 import com.olalekan.CoolBank.model.dto.admin.response.AdminActionLogResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.repo.AdminActionLogRepo;
 import com.olalekan.CoolBank.repo.AppUserRepo;
 import com.olalekan.CoolBank.repo.TransactionRepo;
@@ -24,7 +25,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
     private final TransactionRepo transactionRepo;
     private final AdminActionLogRepo adminActionLogRepo;
 
-    public AdminDashboardStatDto dashboardStat() {
+    public ApiResponse dashboardStat() {
 
         long totalUsers = userRepo.count();
         long activeUsers = userRepo.countByActiveStatus(ActiveStatus.ACTIVE);
@@ -32,26 +33,38 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
         long totalTransactionCount = transactionRepo.count();
         long pendingKyc = userRepo.countByActiveStatus(ActiveStatus.PENDING_VERIFICATION);
 
-        return AdminDashboardStatDto.builder()
+        AdminDashboardStatDto adminDashboardStat =  AdminDashboardStatDto.builder()
                 .activeUser(activeUsers)
                 .totalUsers(totalUsers)
                 .totalTransactionCount(totalTransactionCount)
                 .totalTransactionVolume(totalTransactionVolume)
                 .pendingKycCount(pendingKyc)
                 .build();
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("Admin dashboard stat")
+                .data(adminDashboardStat)
+                .build();
     }
 
-    public Page<AdminActionLogResponseDto> auditLogs(Pageable pageable) {
+    public ApiResponse auditLogs(Pageable pageable) {
 
-        return adminActionLogRepo.findAll(pageable).map(auditLog -> (
-                    AdminActionLogResponseDto.builder()
-                            .id(auditLog.getId())
-                            .adminName(auditLog.getAdmin().getFullName())
-                            .action(auditLog.getAction().toString())
-                            .reason(auditLog.getReason())
-                            .targetId(auditLog.getTargetId())
-                            .createdAt(auditLog.getCreatedAt())
-                            .build()
-                ));
+        Page<AdminActionLogResponseDto> adminActionLogs = adminActionLogRepo.findAll(pageable).map(auditLog -> (
+                AdminActionLogResponseDto.builder()
+                        .id(auditLog.getId())
+                        .adminName(auditLog.getAdmin().getFullName())
+                        .action(auditLog.getAction().toString())
+                        .reason(auditLog.getReason())
+                        .targetId(auditLog.getTargetId())
+                        .createdAt(auditLog.getCreatedAt())
+                        .build()
+        ));
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("Admin Actions log")
+                .data(adminActionLogs)
+                .build();
     }
 }

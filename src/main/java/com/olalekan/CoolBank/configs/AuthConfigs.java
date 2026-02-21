@@ -45,13 +45,13 @@ public class AuthConfigs {
                 .csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .authorizeHttpRequests(auth ->
                             auth
-                                    .requestMatchers("/api/v1/register",
-                                            "/api/v1/login",
-                                            "/api/v1/verify",
-                                            "/api/v1/forgotPassword",
-                                            "/api/v1/resetPassword",
-                                            "/api/v1/refreshToken",
-                                            "/api/v1/verifyPayment",
+                                    .requestMatchers("/api/v1/auth/register",
+                                            "/api/v1/auth/login",
+                                            "/api/v1/auth/verify",
+                                            "/api/v1/auth/forgotPassword",
+                                            "/api/v1/auth/resetPassword",
+                                            "/api/v1/auth/refreshToken",
+                                            "/api/v1/funding/verifyPayment",
                                             "/v3/api-docs/**",
                                             "/swagger-ui/**",
                                             "/swagger-ui.html").permitAll()

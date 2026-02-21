@@ -10,6 +10,7 @@ import com.olalekan.CoolBank.exception.PaymentVerificationException;
 import com.olalekan.CoolBank.model.AppUser;
 import com.olalekan.CoolBank.model.Transaction;
 import com.olalekan.CoolBank.model.Wallet;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.response.IntialisePaymentResponse;
 import com.olalekan.CoolBank.repo.AppUserRepo;
@@ -60,7 +61,7 @@ public class PaymentServicePaystackImpl implements PaymentService {
     private String paystackVerifyUrl;
 
     @Transactional(noRollbackFor = PaymentInitializationException.class)
-    public IntialisePaymentResponse initializePayment(BigDecimal amount){
+    public ApiResponse initializePayment(BigDecimal amount){
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -110,8 +111,12 @@ public class PaymentServicePaystackImpl implements PaymentService {
 
                 Map<String, Object> data = (Map<String, Object>) response.getBody().get("data");
                 String authUrl = data.get("authorization_url").toString();
-                return IntialisePaymentResponse.builder()
-                        .authorizationUrl(authUrl)
+                return ApiResponse.builder()
+                                .error(false)
+                                .message("Paystack payment authorization url")
+                                .data(IntialisePaymentResponse.builder()
+                                        .authorizationUrl(authUrl)
+                                        .build())
                         .build();
             }else {
                 throw new PaymentInitializationException("Paystack payment initialization failed");
@@ -128,7 +133,7 @@ public class PaymentServicePaystackImpl implements PaymentService {
 
 
     @Transactional(noRollbackFor = {IncorrectAmountException.class, PaymentVerificationException.class})
-    public BaseResponseDto verifyPayment(String reference){
+    public ApiResponse verifyPayment(String reference){
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + paystackSecret);
@@ -168,13 +173,15 @@ public class PaymentServicePaystackImpl implements PaymentService {
             }
 
             if(transaction.getStatus() == TransactionStatus.SUCCESS){
-                return BaseResponseDto.builder()
+                return ApiResponse.builder()
+                        .error(true)
                         .message("Payment has already been verified")
                         .build();
             }
 
             if(transaction.getStatus() == TransactionStatus.FAILED){
-                return BaseResponseDto.builder()
+                return ApiResponse.builder()
+                        .error(true)
                         .message("Payment failed, please initialize new payment")
                         .build();
             }
@@ -195,8 +202,10 @@ public class PaymentServicePaystackImpl implements PaymentService {
             wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
             walletRepo.save(wallet);
             transactionRepo.save(transaction);
-            return BaseResponseDto.builder()
-                    .message("Transaction completed")
+            return ApiResponse.builder()
+                    .error(false)
+                    .message("Payment made successfully")
+                    .data(wallet)
                     .build();
 
         }catch (PaymentVerificationException e){

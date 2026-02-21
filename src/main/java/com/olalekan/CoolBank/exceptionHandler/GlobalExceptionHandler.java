@@ -9,6 +9,7 @@ import com.olalekan.CoolBank.exception.InvalidUserStatusException;
 import com.olalekan.CoolBank.exception.PaymentInitializationException;
 import com.olalekan.CoolBank.exception.PaymentVerificationException;
 import com.olalekan.CoolBank.exception.UnauthorizeUserException;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,96 +29,139 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex){
+    public ApiResponse methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex){
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
                 );
 
-        return errors;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Invalid arguments")
+                .data(errors)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ExpiredTokenException.class)
-    public Map<String, String> expiredTokenExceptionHandler(ExpiredTokenException ex){
+    public ApiResponse expiredTokenExceptionHandler(ExpiredTokenException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Expired Token error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DuplicateResourceException.class)
-    public Map<String, String> duplicateResourceExceptionHandler(DuplicateResourceException ex){
+    public ApiResponse duplicateResourceExceptionHandler(DuplicateResourceException ex){
         Map<String, String> error = new HashMap<>();
 
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("duplicate resource error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoSuchElementException.class)
-    public Map<String, String> noSuchElementExceptionHandler(NoSuchElementException ex){
+    public ApiResponse noSuchElementExceptionHandler(NoSuchElementException ex){
         Map<String, String> error = new HashMap<>();
-
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("No such element error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UsernameNotFoundException.class)
-    public Map<String, String> usernameNotFoundExceptionHandler(UsernameNotFoundException ex){
+    public ApiResponse usernameNotFoundExceptionHandler(UsernameNotFoundException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Invalid User error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InsufficientBalanceException.class)
-    public Map<String, String> insufficientBalanceExceptionHandler(InsufficientBalanceException ex){
+    public ApiResponse insufficientBalanceExceptionHandler(InsufficientBalanceException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Insufficient balance error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DuplicateTransactionException.class)
-    public Map<String, String> duplicateTransactionExceptionHandler(DuplicateTransactionException ex){
+    public ApiResponse duplicateTransactionExceptionHandler(DuplicateTransactionException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("duplicate transaction error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizeUserException.class)
-    public Map<String, String> unauthorizeUserExceptionHandler(UnauthorizeUserException ex){
+    public ApiResponse unauthorizeUserExceptionHandler(UnauthorizeUserException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Unauthorized User error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(PaymentInitializationException.class)
-    public Map<String, String> paymentInitializationExceptionHandler(PaymentInitializationException ex){
+    public ApiResponse paymentInitializationExceptionHandler(PaymentInitializationException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Payment initialization error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(PaymentVerificationException.class)
-    public Map<String, String> paymentVerificationExceptionHandler(PaymentVerificationException ex){
+    public ApiResponse paymentVerificationExceptionHandler(PaymentVerificationException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Payment Verification error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(IncorrectAmountException.class)
-    public Map<String, String> incorrectAmountExceptionHandler(IncorrectAmountException ex){
+    public ApiResponse incorrectAmountExceptionHandler(IncorrectAmountException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Incorrect amount error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -130,50 +174,70 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadCredentialsException.class)
-    public Map<String, String> badCredentialsExceptionHandler(BadCredentialsException ex){
+    public ApiResponse badCredentialsExceptionHandler(BadCredentialsException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Bad Credentials error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException.class)
-    public Map<String, String> illegalStateExceptionHandler(IllegalStateException ex){
+    public ApiResponse illegalStateExceptionHandler(IllegalStateException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpClientErrorException.class)
-    public Map<String, String> httpClientErrorExceptionHandler(HttpClientErrorException ex){
+    public ApiResponse httpClientErrorExceptionHandler(HttpClientErrorException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .message("Http Client error")
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpServerErrorException.class)
-    public Map<String, String> httpServerErrorExceptionHandler(HttpServerErrorException ex){
+    public ApiResponse httpServerErrorExceptionHandler(HttpServerErrorException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
-    public Map<String, String> illegalArgumentExceptionHandler(IllegalArgumentException ex){
+    public ApiResponse illegalArgumentExceptionHandler(IllegalArgumentException ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .data(error)
+                .build();
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public Map<String, String> exceptionHandler(Exception ex){
+    public ApiResponse exceptionHandler(Exception ex){
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
-        return error;
+        return ApiResponse.builder()
+                .error(true)
+                .data(error)
+                .build();
     }
 
 

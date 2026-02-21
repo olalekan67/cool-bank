@@ -5,19 +5,20 @@ import com.olalekan.CoolBank.model.dto.request.LoginRequestDto;
 import com.olalekan.CoolBank.model.dto.request.RefreshTokenRequestDto;
 import com.olalekan.CoolBank.model.dto.request.RegisterRequestDto;
 import com.olalekan.CoolBank.model.dto.request.ResetPasswordRequestDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.response.LoginResponseDto;
 
 public interface UserService {
-    BaseResponseDto registerUsers(RegisterRequestDto registerRequestDto);
+    ApiResponse registerUsers(RegisterRequestDto registerRequestDto);
 
-    BaseResponseDto verifyUsers(String userToken);
+    ApiResponse verifyUsers(String userToken);
 
-    LoginResponseDto login(LoginRequestDto requestDto);
+    ApiResponse login(LoginRequestDto requestDto);
 
-    LoginResponseDto refreshToken(RefreshTokenRequestDto requestDto);
+    ApiResponse refreshToken(RefreshTokenRequestDto requestDto);
 
-    BaseResponseDto forgotPassword(ForgotPasswordRequestDto input);
+    ApiResponse forgotPassword(ForgotPasswordRequestDto input);
 
-    BaseResponseDto resetPassword(ResetPasswordRequestDto input);
+    ApiResponse resetPassword(ResetPasswordRequestDto input);
 }

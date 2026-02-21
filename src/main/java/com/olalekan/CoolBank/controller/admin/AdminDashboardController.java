@@ -1,10 +1,8 @@
 package com.olalekan.CoolBank.controller.admin;
 
-import com.olalekan.CoolBank.model.dto.admin.request.AdminDashboardStatDto;
-import com.olalekan.CoolBank.model.dto.admin.response.AdminActionLogResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.service.admin.AdminDashboardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +20,16 @@ public class AdminDashboardController {
     private final AdminDashboardService dashboardService;
 
     @GetMapping("dashboard/stats")
-    public ResponseEntity<AdminDashboardStatDto> dashboardStats(){
-        AdminDashboardStatDto statistic = dashboardService.dashboardStat();
-        return new ResponseEntity<>(statistic, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> dashboardStats(){
+//        AdminDashboardStatDto statistic = dashboardService.dashboardStat();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(dashboardService.dashboardStat());
     }
 
     @GetMapping("audit-log")
-    public ResponseEntity<Page<AdminActionLogResponseDto>> auditLogs(Pageable pageable){
-        Page<AdminActionLogResponseDto> auditLogsResponse = dashboardService.auditLogs(pageable);
-        return new ResponseEntity<>(auditLogsResponse, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> auditLogs(Pageable pageable){
+//        Page<AdminActionLogResponseDto> auditLogsResponse = dashboardService.auditLogs(pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(dashboardService.auditLogs(pageable));
     }
 }

@@ -2,12 +2,9 @@ package com.olalekan.CoolBank.controller.admin;
 
 import com.olalekan.CoolBank.model.dto.admin.request.AccountKycUpgradeDto;
 import com.olalekan.CoolBank.model.dto.admin.request.AdminFreezeUserDto;
-import com.olalekan.CoolBank.model.dto.admin.response.UserSummaryBriefResponseDto;
-import com.olalekan.CoolBank.model.dto.admin.response.UserSummaryResponseDto;
-import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.service.admin.AdminUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,33 +25,38 @@ public class AdminUserController {
     private final AdminUserService adminUserService;
 
     @GetMapping("users")
-    public ResponseEntity<Page<UserSummaryBriefResponseDto>> users(Pageable pageable){
-        Page<UserSummaryBriefResponseDto> users = adminUserService.getUsers(pageable);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> users(Pageable pageable){
+//        Page<UserSummaryBriefResponseDto> users = adminUserService.getUsers(pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adminUserService.getUsers(pageable));
     }
 
     @GetMapping("users/{userId}")
-    public ResponseEntity<UserSummaryResponseDto> user(@PathVariable String userId){
-        UserSummaryResponseDto user = adminUserService.getUser(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> user(@PathVariable String userId){
+//        UserSummaryResponseDto user = adminUserService.getUser(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adminUserService.getUser(userId));
     }
 
     @PutMapping("users/{userId}/freeze")
-    public ResponseEntity<BaseResponseDto> freezeUsers(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
-        BaseResponseDto response = adminUserService.freezeUser(userId, adminFreezeUserDto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> freezeUsers(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
+//        BaseResponseDto response = adminUserService.freezeUser(userId, adminFreezeUserDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adminUserService.freezeUser(userId, adminFreezeUserDto));
     }
 
     @PutMapping("users/{userId}/unfreeze")
-    public ResponseEntity<BaseResponseDto> unfreezeUsers(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
-        BaseResponseDto response = adminUserService.unFreezeUser(userId, adminFreezeUserDto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> unfreezeUsers(@PathVariable String userId, @RequestBody AdminFreezeUserDto adminFreezeUserDto){
+//        BaseResponseDto response = adminUserService.unFreezeUser(userId, adminFreezeUserDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adminUserService.unFreezeUser(userId, adminFreezeUserDto));
     }
 
     @PutMapping("users/{userId}/kyc")
-    public ResponseEntity<BaseResponseDto> kycUpgrades(@PathVariable String userId, @RequestBody AccountKycUpgradeDto kycUpgradeDto){
-        BaseResponseDto responseDto = adminUserService.upgradeKyc(userId, kycUpgradeDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> kycUpgrades(@PathVariable String userId, @RequestBody AccountKycUpgradeDto kycUpgradeDto){
+//        BaseResponseDto responseDto = adminUserService.upgradeKyc(userId, kycUpgradeDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adminUserService.upgradeKyc(userId, kycUpgradeDto));
     }
 
 }

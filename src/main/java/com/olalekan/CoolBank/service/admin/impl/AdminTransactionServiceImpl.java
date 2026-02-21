@@ -12,7 +12,7 @@ import com.olalekan.CoolBank.model.Transaction;
 import com.olalekan.CoolBank.model.Wallet;
 import com.olalekan.CoolBank.model.dto.admin.request.AdminTransactionAdjustmentDto;
 import com.olalekan.CoolBank.model.dto.admin.response.AdminTransactionResponseBrief;
-import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.model.dto.response.TransactionResponseDto;
 import com.olalekan.CoolBank.repo.AdminActionLogRepo;
 import com.olalekan.CoolBank.repo.AppUserRepo;
@@ -39,29 +39,35 @@ public class AdminTransactionServiceImpl implements AdminTransactionService {
     private final AppUserRepo userRepo;
 
     @Transactional(readOnly = true)
-    public Page<AdminTransactionResponseBrief> transactions(Pageable pageable) {
+    public ApiResponse transactions(Pageable pageable) {
 
-        return transactionRepo.findAll(pageable).map(transaction -> (
-           AdminTransactionResponseBrief.builder()
-                   .senderEmail(transaction.getExternalReference() == null ? transaction.getSourceWallet().getUser().getEmail() : "External Funding")
-                   .senderFullName(transaction.getExternalReference() == null ? transaction.getSourceWallet().getUser().getFullName() : "Paystack funding")
-                   .amount(transaction.getAmount())
-                   .receiverEmail(transaction.getDestinationWallet().getUser().getEmail())
-                   .receiverFullName(transaction.getDestinationWallet().getUser().getFullName())
-                   .reference(transaction.getReference())
-                   .dateTime(transaction.getCreatedAt())
-                   .externalReference(transaction.getExternalReference())
-                   .build()
+        Page<AdminTransactionResponseBrief> adminTransactionResponseBriefs = transactionRepo.findAll(pageable).map(transaction -> (
+                AdminTransactionResponseBrief.builder()
+                        .senderEmail(transaction.getExternalReference() == null ? transaction.getSourceWallet().getUser().getEmail() : "External Funding")
+                        .senderFullName(transaction.getExternalReference() == null ? transaction.getSourceWallet().getUser().getFullName() : "Paystack funding")
+                        .amount(transaction.getAmount())
+                        .receiverEmail(transaction.getDestinationWallet().getUser().getEmail())
+                        .receiverFullName(transaction.getDestinationWallet().getUser().getFullName())
+                        .reference(transaction.getReference())
+                        .dateTime(transaction.getCreatedAt())
+                        .externalReference(transaction.getExternalReference())
+                        .build()
         ));
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("Transactions")
+                .data(adminTransactionResponseBriefs)
+                .build();
     }
 
     @Transactional(readOnly = true)
-    public TransactionResponseDto getTransaction(String reference) {
+    public ApiResponse getTransaction(String reference) {
 
         Transaction transaction = transactionRepo.findByReference(reference)
                 .orElseThrow(() -> new TransactionNotFoundException("This transaction does not exist"));
 
-        return TransactionResponseDto.builder()
+        var transactionRes = TransactionResponseDto.builder()
                 .senderEmail(transaction.getExternalReference() == null ? transaction.getSourceWallet().getUser().getEmail() : "External Funding Via paystack")
                 .senderFullName(transaction.getExternalReference() == null ? transaction.getSourceWallet().getUser().getFullName() : "Paystack Funding")
                 .receiverEmail(transaction.getDestinationWallet().getUser().getEmail())
@@ -73,10 +79,16 @@ public class AdminTransactionServiceImpl implements AdminTransactionService {
                 .reference(transaction.getReference())
                 .externalReference(transaction.getExternalReference())
                 .build();
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("Single transaction")
+                .data(transactionRes)
+                .build();
     }
 
     @Transactional
-    public BaseResponseDto creditAccount(AdminTransactionAdjustmentDto adjustmentDto) {
+    public ApiResponse creditAccount(AdminTransactionAdjustmentDto adjustmentDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         AppUser adminUser = userRepo.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("This user does not exist"));
@@ -111,13 +123,15 @@ public class AdminTransactionServiceImpl implements AdminTransactionService {
         walletRepo.save(userWallet);
         transactionRepo.save(transaction);
         adminActionLogRepo.save(adminAction);
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("User account with email: " + adjustmentDto.email() + " has been credited " + adjustmentDto.amount() + " Successfully" )
+                .data(transaction)
                 .build();
     }
 
     @Transactional
-    public BaseResponseDto debitAccount(AdminTransactionAdjustmentDto adjustmentDto) {
+    public ApiResponse debitAccount(AdminTransactionAdjustmentDto adjustmentDto) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         AppUser adminUser = userRepo.findByEmail(email)
@@ -159,8 +173,10 @@ public class AdminTransactionServiceImpl implements AdminTransactionService {
         walletRepo.save(userWallet);
         transactionRepo.save(transaction);
         adminActionLogRepo.save(adminAction);
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("User account with email: " + adjustmentDto.email() + " has been debited " + adjustmentDto.amount() + " Successfully" )
+                .data(transaction)
                 .build();
     }
 }

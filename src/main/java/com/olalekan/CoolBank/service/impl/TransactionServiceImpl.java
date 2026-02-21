@@ -12,6 +12,7 @@ import com.olalekan.CoolBank.model.Transaction;
 import com.olalekan.CoolBank.model.Wallet;
 import com.olalekan.CoolBank.model.dto.request.TransferRequestDto;
 import com.olalekan.CoolBank.model.dto.request.WithdrawalRequestDto;
+import com.olalekan.CoolBank.model.dto.response.ApiResponse;
 import com.olalekan.CoolBank.model.dto.response.BaseResponseDto;
 import com.olalekan.CoolBank.model.dto.response.TransactionResponseDto;
 import com.olalekan.CoolBank.repo.AppUserRepo;
@@ -42,7 +43,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public BaseResponseDto transfer(@Valid TransferRequestDto requestDto) {
+    public ApiResponse transfer(@Valid TransferRequestDto requestDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(transactionRepo.existsByReference(requestDto.reference())){
@@ -95,12 +96,14 @@ public class TransactionServiceImpl implements TransactionService {
 
         transactionRepo.save(transaction);
 
-        return BaseResponseDto.builder()
+        return ApiResponse.builder()
+                .error(false)
                 .message("Transfer done successfully")
+                .data(transaction)
                 .build();
     }
 
-    public TransactionResponseDto getTransaction(@Valid UUID id) {
+    public ApiResponse getTransaction(@Valid UUID id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         AppUser currentUser = userRepo.findByEmail(email)
@@ -122,7 +125,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new UnauthorizeUserException("You are not allowed to access this transaction");
         }
 
-        return TransactionResponseDto.builder()
+        TransactionResponseDto transactionRes = TransactionResponseDto.builder()
                 .senderEmail(isSourceWallet ? transaction.getSourceWallet().getUser().getEmail() : "External Funding")
                 .senderFullName(isSourceWallet ? transaction.getSourceWallet().getUser().getFullName() : "Paystack")
                 .receiverEmail(transaction.getDestinationWallet().getUser().getEmail())
@@ -135,9 +138,15 @@ public class TransactionServiceImpl implements TransactionService {
                 .status(transaction.getStatus())
                 .dateTime(transaction.getCreatedAt())
                 .build();
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("Transaction")
+                .data(transactionRes)
+                .build();
     }
 
-    public List<TransactionResponseDto> histories() {
+    public ApiResponse histories() {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -147,10 +156,13 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactions = transactionRepo.findWalletHistory(user.getWallet().getId());
 
         if(transactions.isEmpty()){
-            return new ArrayList<>();
+            return ApiResponse.builder()
+                    .error(false)
+                    .message("This user has not perform any transaction")
+                    .build();
         }
 
-        return transactions.stream().map(transaction -> {
+        var transactionsRes = transactions.stream().map(transaction -> {
             boolean isSourceWallet = transaction.getSourceWallet() != null;
 
 
@@ -169,10 +181,16 @@ public class TransactionServiceImpl implements TransactionService {
                     .build();
         }).toList();
 
+
+        return ApiResponse.builder()
+                .error(false)
+                .message("This is the user transaction histories")
+                .data(transactionsRes)
+                .build();
     }
 
     @Transactional
-    public BaseResponseDto withdraw(WithdrawalRequestDto input) {
+    public ApiResponse withdraw(WithdrawalRequestDto input) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         AppUser user = userRepo.findByEmail(email)
@@ -205,8 +223,10 @@ public class TransactionServiceImpl implements TransactionService {
 
         walletRepo.save(wallet);
         transactionRepo.save(transaction);
-        return BaseResponseDto.builder()
-                .message("Withdrawal done successfully")
+        return ApiResponse.builder()
+                .error(false)
+                .message("Mock Withdrawal done successfully")
+                .data(transaction)
                 .build();
     }
 }

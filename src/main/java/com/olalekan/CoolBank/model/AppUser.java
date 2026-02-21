@@ -1,5 +1,6 @@
 package com.olalekan.CoolBank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.olalekan.CoolBank.Utils.ActiveStatus;
 import com.olalekan.CoolBank.Utils.KycTier;
 import com.olalekan.CoolBank.Utils.UserRole;
@@ -36,6 +37,7 @@ public class AppUser extends BaseEntity {
     private String phoneNumber;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
